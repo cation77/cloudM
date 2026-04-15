@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Company {
+  id      String @id @default(cuid())
+  name    String
+  contact String @default("")
+  phone   String @default("")
+  address String @default("")
+  tags    CompanyTag[]
+  trainings TrainingRecord[]
+}
+
+model Teacher {
+  id       String @id @default(cuid())
+  name     String
+  specialty String @default("")
+  phone    String @default("")
+  email    String @default("")
+  tags     TeacherTag[]
+  trainings TrainingRecord[]
+}
+
+model TrainingRecord {
+  id          String   @id @default(cuid())
+  title       String
+  date        String
+  description String   @default("")
+  companyId   String
+  teacherId   String
+  company     Company  @relation(fields: [companyId], references: [id])
+  teacher     Teacher  @relation(fields: [teacherId], references: [id])
+  tags        TrainingTag[]
+  documents   Document[]
+}
+
+model Document {
+  id         String   @id @default(cuid())
+  name       String
+  type       String
+  size       String
+  uploadDate String
+  filePath   String   @default("")
+  trainingId String
+  training   TrainingRecord @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+  tags       DocumentTag[]
+}
+
+model Tag {
+  id        String       @id @default(cuid())
+  name      String
+  companies CompanyTag[]
+  teachers  TeacherTag[]
+  trainings TrainingTag[]
+  documents DocumentTag[]
+}
+
+model CompanyTag {
+  companyId String
+  tagId     String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([companyId, tagId])
+}
+
+model TeacherTag {
+  teacherId String
+  tagId     String
+  teacher   Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([teacherId, tagId])
+}
+
+model TrainingTag {
+  trainingId String
+  tagId      String
+  training   TrainingRecord @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+  tag        Tag            @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([trainingId, tagId])
+}
+
+model DocumentTag {
+  documentId String
+  tagId      String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([documentId, tagId])
+}
