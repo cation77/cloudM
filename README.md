@@ -20,6 +20,28 @@
 └── package.json
 ```
 
+## 架构与流程图
+
+```mermaid
+graph TD
+    subgraph "架构"
+        A2["src/index.ts<br/>入口文件"] --> B2["Middlewares<br/>logger + errorHandler"]
+        B2 --> C2["Routes<br/>/api/project/*"]
+        C2 --> D2["Controllers<br/>project.ts"]
+        D2 --> E2["Services<br/>project.ts"]
+        E2 --> F2["Prisma Client<br/>单例模式"]
+        F2 --> G2["SQLite<br/>Project模型"]
+        
+        style A2 fill:#c8e6c9,color:#1a5e20
+        style B2 fill:#bbdefb,color:#0d47a1
+        style C2 fill:#fff3e0,color:#e65100
+        style D2 fill:#f3e5f5,color:#7b1fa2
+        style E2 fill:#f3e5f5,color:#7b1fa2
+        style F2 fill:#bbdefb,color:#0d47a1
+        style G2 fill:#c8e6c9,color:#1a5e20
+    end
+```
+
 ## zod
 
 利用 Zod 定义 Schema，并使用 z.infer 自动生成类型，确保校验逻辑与代码类型完全同步

@@ -1,7 +1,7 @@
-import prisma from "@/client.js";
+import prisma from "@/client";
 import logger from "@/utils/logger";
 import AppError from "@/utils/appError";
-import type { CreateProjectInput } from '@/schemas/project.schema.js';
+import type { CreateProjectInput } from '@/schemas/project.schema';
 
 export const getAllProjects = async () => {
   logger.info("getAllProjects");
