@@ -9,5 +9,5 @@ export const login = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
   // throw new AppError("未实现", 404);
-  sendSuccess(res, {});
+  sendSuccess(res, null, "退出成功");
 };

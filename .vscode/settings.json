@@ -14,5 +14,9 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "prettier.requireConfig": false,
-  "commentTranslate.hover.enabled": true
+  "commentTranslate.hover.enabled": true,
+  "prisma.pinToPrisma6": true,
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma-insider"
+  }
 }

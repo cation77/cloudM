@@ -3,15 +3,15 @@ import { AdminOnly, StaffOnly } from "@/middlewares/guards";
 import * as userController from "@/controllers/user";
 import { validate } from "@/middlewares/validate";
 import {
-  UserIdSchema,
   createUserSchema,
   updateUserSchema,
   changePasswordSchema,
 } from "@/schemas/user.schema";
+import { QueryIdSchema, PaginationSchema } from "@/schemas/common.schema";
 
 const router = Router();
 
-router.get("/list", AdminOnly, userController.list);
+router.get("/list", AdminOnly, validate(PaginationSchema), userController.list);
 router.post(
   "/create",
   AdminOnly,
@@ -21,7 +21,7 @@ router.post(
 router.delete(
   "/delete",
   AdminOnly,
-  validate(UserIdSchema),
+  validate(QueryIdSchema),
   userController.deleteUser,
 );
 router.put(
@@ -30,7 +30,12 @@ router.put(
   validate(updateUserSchema),
   userController.updateUser,
 );
-router.get("/info", StaffOnly, validate(UserIdSchema), userController.userInfo);
+router.get(
+  "/info",
+  StaffOnly,
+  validate(QueryIdSchema),
+  userController.userInfo,
+);
 router.post(
   "/changePassword",
   StaffOnly,

@@ -6,9 +6,45 @@ import type {
   UpdateUserInput,
   ChangePasswordInput,
 } from "@/schemas/user.schema";
+import { parsePagination } from "@/utils/pagination";
+import type { PaginationInput } from "@/schemas/common.schema";
 
-export const list = async () => {
-  return await prisma.user.findMany({
+export const list = async (pagination: PaginationInput) => {
+  // 这里的 skip 计算是核心
+  const { skip, take } = parsePagination(pagination);
+  // 并行执行：查询数据和查询总数
+  const [total, list] = await Promise.all([
+    prisma.user.count(),
+    prisma.user.findMany({
+      skip,
+      take,
+      where: { deletedAt: null },
+      orderBy: { createdAt: "desc" }, // 通常按时间倒序
+      select: {
+        // 排除敏感字段
+        id: true,
+        username: true,
+        nick: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    }),
+  ]);
+  return {
+    list,
+    pagination: {
+      total,
+      page: pagination.page,
+      pageSize: pagination.pageSize,
+      totalPages: Math.ceil(total / pagination.pageSize),
+    },
+  };
+};
+
+export const userInfo = async (id: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id, deletedAt: null },
     select: {
       id: true,
       username: true,
@@ -16,11 +52,15 @@ export const list = async () => {
       role: true,
     },
   });
+  if (!user) {
+    throw new AppError("用户不存在", 400);
+  }
+  return user;
 };
 
 export const createUser = async (data: CreateUserInput) => {
   const existing = await prisma.user.findUnique({
-    where: { username: data.username },
+    where: { username: data.username, deletedAt: null },
   });
   if (existing) {
     throw new AppError("用户名已存在", 400);
@@ -42,6 +82,7 @@ export const createUser = async (data: CreateUserInput) => {
 };
 
 export const updateUser = async (data: UpdateUserInput) => {
+  await userInfo(data.id);
   return await prisma.user.update({
     where: { id: data.id },
     data: {
@@ -58,31 +99,18 @@ export const updateUser = async (data: UpdateUserInput) => {
   });
 };
 
-export const deleteUser = async (userId: string) => {
-  return await prisma.user.delete({
-    where: { id: userId },
+export const deleteUser = async (id: string) => {
+  // 先查找
+  await userInfo(id);
+  // 执行逻辑软删除
+  return await prisma.user.update({
+    where: { id },
+    data: { deletedAt: new Date() },
   });
 };
 
-export const userInfo = async (userId: string) => {
-  return await prisma.user.findUnique({
-    where: { id: userId },
-    select: {
-      id: true,
-      username: true,
-      nick: true,
-      role: true,
-    },
-  });
-};
-
-export const updatePassword = async (
-  userId: string,
-  data: ChangePasswordInput,
-) => {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-  });
+export const updatePassword = async (id: string, data: ChangePasswordInput) => {
+  const user = await prisma.user.findUnique({ where: { id, deletedAt: null } });
   if (!user) {
     throw new AppError("用户不存在", 400);
   }
@@ -92,7 +120,7 @@ export const updatePassword = async (
   }
   const newPasswordHash = await bcrypt.hash(data.newPassword, 10);
   return await prisma.user.update({
-    where: { id: userId },
+    where: { id },
     data: {
       password: newPasswordHash,
     },

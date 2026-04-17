@@ -23,4 +23,8 @@ if (!envParse.success) {
   process.exit(1); // 配置错误直接关停服务
 }
 
+export const PAGINATION_DEFAULT_PAGE_SIZE = 10;
+
+export const PAGINATION_MAX_PAGE_SIZE = 100;
+
 export const config = envParse.data;

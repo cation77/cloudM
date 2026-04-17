@@ -8,9 +8,9 @@ datasource db {
 }
 
 enum Role {
-  ADMIN    // 管理员
-  USER     // 普通用户
-  GUEST    // 访客
+  ADMIN // 管理员
+  USER // 普通用户
+  GUEST // 访客
 }
 
 model User {
@@ -18,17 +18,48 @@ model User {
   username String  @unique
   password String
   nick     String  @default("")
-  role     Role
+  role     Role    @default(USER)
   isActive Boolean @default(true)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([deletedAt])
 }
 
-
 model Project {
-  id                   String                 @id @default(nanoid())
-  name                 String
-  description          String
-  defaultModelConfigId String?
-  test                 String                 @default("")
-  createAt             DateTime               @default(now())
-  updateAt             DateTime               @updatedAt
+  id          String  @id @default(nanoid())
+  name        String  @unique
+  path        String  @unique
+  description String?
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  deletedAt DateTime?
+  instances Instance[]
+
+  @@index([name, deletedAt])
+}
+
+model Instance {
+  id          String  @id @default(nanoid())
+  nodeIp      String
+  port        Int
+  resolution  String
+  performance String?
+  quality     String?
+  status      Int     @default(0)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  // 外键关联
+  projectId String
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // 复合唯一约束：同一台服务器(IP)的同一个端口，不能被重复分配给不同实例
+  @@unique([nodeIp, port])
+  // 索引优化：按工程查询实例是高频操作
+  @@index([projectId, deletedAt])
 }

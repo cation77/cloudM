@@ -6,45 +6,45 @@ const prisma = new PrismaClient();
 async function main() {
   // Create user
   await prisma.user.upsert({
-    where: { username: 'admin' },
+    where: { username: "admin" },
     update: {},
     create: {
-      username: 'admin',
-      password: await bcrypt.hash('admin123', 10),
-      nick: '管理员',
-      role: 'ADMIN',
+      username: "admin",
+      password: await bcrypt.hash("admin123", 10),
+      nick: "管理员",
+      role: "ADMIN",
     },
   });
   await prisma.user.upsert({
-    where: { username: 'cloud' },
+    where: { username: "cloud" },
     update: {},
     create: {
-      username: 'cloud',
-      password: await bcrypt.hash('cloud123', 10),
-      nick: '用户',
-      role: 'USER',
+      username: "cloud",
+      password: await bcrypt.hash("cloud123", 10),
+      nick: "用户",
+      role: "USER",
     },
   });
   await prisma.user.upsert({
-    where: { username: 'guest' },
+    where: { username: "guest" },
     update: {},
     create: {
-      username: 'guest',
-      password: await bcrypt.hash('guest123', 10),
-      nick: '游客',
-      role: 'GUEST',
+      username: "guest",
+      password: await bcrypt.hash("guest123", 10),
+      nick: "游客",
+      role: "GUEST",
     },
   });
 
   const projects = await Promise.all([
     prisma.project.upsert({
-      where: { id: "154841951654" },
+      where: { id: "kHe4f6fyD2GNqHthDCJCy" },
       update: {},
       create: {
-        id: "154841951654",
+        id: "kHe4f6fyD2GNqHthDCJCy",
         name: "demo",
+        path: "D:/test/demo.ywpj",
         description: "demo",
-        test: "test",
       },
     }),
   ]);
