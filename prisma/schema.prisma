@@ -17,7 +17,7 @@ model User {
   id       String  @id @default(nanoid())
   username String  @unique
   password String
-  name     String  @default("")
+  nick     String  @default("")
   role     Role
   isActive Boolean @default(true)
 }

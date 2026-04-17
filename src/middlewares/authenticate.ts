@@ -15,7 +15,7 @@ const authenticate = (req: Request, res: Response, next: NextFunction) => {
   try {
     const decoded = verifyToken(token!);
     // 将解析出的 user 信息存入 req，方便后续权限中间件使用
-    (req as any).user = decoded;
+    req.user = decoded;
     next();
   } catch (error) {
     sendError(res, "Token 无效或已过期", 401);

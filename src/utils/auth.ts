@@ -1,15 +1,16 @@
 import jwt from "jsonwebtoken";
+import { Role } from "@/types/auth";
+import { config } from "../config/index";
 
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET环境变量未设置");
-}
 const EXPIRES_IN = "1d";
 
-export const generateToken = (payload: { userId: string; role: string }) => {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: EXPIRES_IN });
+export const generateToken = (payload: { id: string; role: Role }) => {
+  return jwt.sign(payload, config.JWT_SECRET, { expiresIn: EXPIRES_IN });
 };
 
 export const verifyToken = (token: string) => {
-  return jwt.verify(token, JWT_SECRET) as { userId: string; role: string };
+  return jwt.verify(token, config.JWT_SECRET) as {
+    id: string;
+    role: Role;
+  };
 };

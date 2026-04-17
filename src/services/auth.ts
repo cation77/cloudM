@@ -18,6 +18,6 @@ export const login = async (data: CreateUserInput) => {
   if (!isMatch) {
     throw new AppError("密码错误", 401);
   }
-  const token = generateToken({ userId: user.id, role: user.role });
+  const token = generateToken({ id: user.id, role: user.role });
   return token;
 };

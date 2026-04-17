@@ -4,16 +4,35 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create super_admin user
-  const hashedPassword = await bcrypt.hash('admin123', 10);
+  // Create user
   await prisma.user.upsert({
     where: { username: 'admin' },
     update: {},
     create: {
       username: 'admin',
-      password: hashedPassword,
-      name: '管理员',
+      password: await bcrypt.hash('admin123', 10),
+      nick: '管理员',
       role: 'ADMIN',
+    },
+  });
+  await prisma.user.upsert({
+    where: { username: 'cloud' },
+    update: {},
+    create: {
+      username: 'cloud',
+      password: await bcrypt.hash('cloud123', 10),
+      nick: '用户',
+      role: 'USER',
+    },
+  });
+  await prisma.user.upsert({
+    where: { username: 'guest' },
+    update: {},
+    create: {
+      username: 'guest',
+      password: await bcrypt.hash('guest123', 10),
+      nick: '游客',
+      role: 'GUEST',
     },
   });
 
