@@ -8,19 +8,26 @@ export const QueryIdSchema = z.object({
   }),
 });
 
+export const PaginationBase = z.object({
+  page: z
+    .string()
+    .optional()
+    .transform((val) => Math.max(1, Number(val) || 1)),
+  pageSize: z
+    .string()
+    .optional()
+    .transform((val) =>
+      Math.max(1, Number(val) || PAGINATION_DEFAULT_PAGE_SIZE),
+    ),
+});
+
+export const DateRangeBase = z.object({
+  startDate: z.coerce.date().optional(),
+  endDate: z.coerce.date().optional(),
+});
+
 export const PaginationSchema = z.object({
-  query: z.object({
-    page: z
-      .string()
-      .optional()
-      .transform((val) => Math.max(1, Number(val) || 1)),
-    pageSize: z
-      .string()
-      .optional()
-      .transform((val) =>
-        Math.max(1, Number(val) || PAGINATION_DEFAULT_PAGE_SIZE),
-      ),
-  }),
+  query: PaginationBase,
 });
 
 export type PaginationInput = z.infer<typeof PaginationSchema>["query"];

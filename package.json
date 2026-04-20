@@ -4,6 +4,7 @@
   "main": "index.ts",
   "type": "module",
   "scripts": {
+    "start": "nodemon --exec tsx src/index.ts",
     "dev": "npx prisma db push && nodemon --exec tsx src/index.ts",
     "db:push": "npx prisma db push",
     "db:seed": "npx tsx prisma/seed.ts",

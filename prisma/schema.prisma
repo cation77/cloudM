@@ -63,3 +63,22 @@ model Instance {
   // 索引优化：按工程查询实例是高频操作
   @@index([projectId, deletedAt])
 }
+
+model ErrorLog {
+  id          String   @id @default(nanoid())
+  fingerprint String   @unique // 唯一指纹
+  type        String // e.g., "JS_ERROR", "PROMISE_ERROR", "RESOURCE_ERROR"
+  url         String // 报错页面
+  message     String
+  count       Int      @default(1) // 报错次数
+  stack       String?
+  userAgent   String?
+  clientIp    String?
+  meta        Json? // 存储自定义业务数据，如：用户信息、状态码
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([type])
+  @@index([fingerprint])
+  @@index([createdAt])
+}
